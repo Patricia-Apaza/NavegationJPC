@@ -17,25 +17,49 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 
+
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+
+
 data class BottomNavItem(
     val title: String,
     val route: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector)
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val badgeCount: Int = 0)
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
-        BottomNavItem("Home", "home", Icons.Default.Home),
-        BottomNavItem("Profile", "profile",Icons.Default.Person),
-        BottomNavItem("Settings", "settings",Icons.Default.Settings)
+        BottomNavItem("Home", "home", Icons.Default.Home, badgeCount = 5),
+        BottomNavItem("Profile", "profile",Icons.Default.Person, badgeCount = 2),
+        BottomNavItem("Settings", "settings",Icons.Default.Settings, badgeCount = 3)
+
     )
+
     // Estado para gestionar el elemento seleccionado
     var selectedItem by remember { mutableStateOf("home") }
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription =
-                item.title) },
+                icon = {
+                    if (item.badgeCount > 0) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = Color.Red,
+                                    contentColor = Color.White
+                                ) {
+                                    Text("${item.badgeCount}")
+                                }
+                            }
+                        ) {
+                            Icon(item.icon, contentDescription = item.title)
+                        }
+                    } else {
+                        Icon(item.icon, contentDescription = item.title)
+                    }
+                },
                 label = { Text(item.title) },
                 selected = selectedItem == item.route,
                 onClick = {
